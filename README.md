@@ -1,4 +1,4 @@
-# Application Table with editing info
+# Application with editing info
 Application for viewing messages and comments based on jsonplaceholder service data
 - [posts](https://jsonplaceholder.typicode.com/posts)
 - [comments](https://jsonplaceholder.typicode.com/comments)
