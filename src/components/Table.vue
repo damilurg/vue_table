@@ -5,65 +5,74 @@
       <th v-for="header in TABLE_HEADER">{{ header.name }}</th>
     </tr>
     </thead>
-    <tbody v-for="author of groupedPosts">
-    <tr :class="{ 'sticky top-42': isExpanded(author.author.id, expandGroupId, isExpandGroup) }">
-      <td>{{ author.author.id }}</td>
-      <td>{{ author.author.username }}</td>
-      <td>{{ author.author.name }}</td>
-      <td>{{ author.author.company.name }}</td>
-      <td>{{ author.author.website }}</td>
-      <td>
-        <button
-          @click="expandHandler(author.author.id)"
-        >
-          {{ HEADER_NAME.EXPAND_GROUP }}
-        </button>
-      </td>
-    </tr>
-    <template v-if="isExpanded(author.author.id, expandGroupId, isExpandGroup)">
-      <tr>
-        <td v-for="header in TABLE_POSTS">{{ header.name }}</td>
+    <template v-if="!errorMessage">
+      <tbody v-for="author of groupedPosts">
+      <tr :class="{ 'sticky top-42': isExpanded(author.author.id, expandGroupId, isExpandGroup) }">
+        <td>{{ author.author.id }}</td>
+        <td>{{ author.author.username }}</td>
+        <td>{{ author.author.name }}</td>
+        <td>{{ author.author.company.name }}</td>
+        <td>{{ author.author.website }}</td>
+        <td>
+          <button
+            @click="expandHandler(author.author.id)"
+          >
+            {{ HEADER_NAME.EXPAND_GROUP }}
+          </button>
+        </td>
       </tr>
-      <template v-for="post of author.posts">
-        <tr class="posts">
-          <td>{{ post.id }}</td>
-          <template v-if="!isExpanded(post.id, editMessageId, isEditMessage)">
-            <td>{{ post.title }}</td>
-            <td>{{ post.body }}</td>
-          </template>
-          <template v-else>
-            <td><input v-model="post.title"></td>
-            <td><textarea v-model="post.body" rows="10" cols="20"></textarea></td>
-          </template>
-          <td>{{ getWordsLength(post.body) }}</td>
-          <td>{{ getCharsLength(post.body) }}</td>
-          <td>
-            <button
-              @click="expandHandler(post.id, false)"
-            >
-              {{ HEADER_NAME.EDIT_POST }}
-            </button>
-          </td>
+      <template v-if="isExpanded(author.author.id, expandGroupId, isExpandGroup)">
+        <tr>
+          <td v-for="header in TABLE_POSTS">{{ header.name }}</td>
         </tr>
-        <template v-if="isExpanded(post.id, editMessageId, isEditMessage)">
-          <tr :class="{ 'sticky top-88': isExpanded(post.id, editMessageId, isEditMessage) }">
-            <td
-              v-for="header in COMMENTS_HEADER"
-              :colspan="header.size ? header.size : 1"
-            >
-              {{ header.name }}
+        <template v-for="post of author.posts">
+          <tr class="posts">
+            <td>{{ post.id }}</td>
+            <template v-if="!isExpanded(post.id, editMessageId, isEditMessage)">
+              <td>{{ post.title }}</td>
+              <td>{{ post.body }}</td>
+            </template>
+            <template v-else>
+              <td><input v-model="post.title"></td>
+              <td><textarea v-model="post.body" rows="10" cols="20"></textarea></td>
+            </template>
+            <td>{{ getWordsLength(post.body) }}</td>
+            <td>{{ getCharsLength(post.body) }}</td>
+            <td>
+              <button
+                @click="expandHandler(post.id, false)"
+              >
+                {{ HEADER_NAME.EDIT_POST }}
+              </button>
             </td>
           </tr>
-          <tr v-for="comment of post.comments">
-            <td>{{ comment.id }}</td>
-            <td>{{ comment.email }}</td>
-            <td>{{ comment.name }}</td>
-            <td colspan="3">{{ comment.body }}</td>
-          </tr>
+          <template v-if="isExpanded(post.id, editMessageId, isEditMessage)">
+            <tr :class="{ 'sticky top-88': isExpanded(post.id, editMessageId, isEditMessage) }">
+              <td
+                v-for="header in COMMENTS_HEADER"
+                :colspan="header.size ? header.size : 1"
+              >
+                {{ header.name }}
+              </td>
+            </tr>
+            <tr v-for="comment of post.comments">
+              <td>{{ comment.id }}</td>
+              <td>{{ comment.email }}</td>
+              <td>{{ comment.name }}</td>
+              <td colspan="3">{{ comment.body }}</td>
+            </tr>
+          </template>
         </template>
       </template>
+      </tbody>
     </template>
-    </tbody>
+    <template v-else>
+      <tbody>
+      <tr>
+        <td>{{ errorMessage }}</td>
+      </tr>
+      </tbody>
+    </template>
   </table>
 </template>
 
@@ -71,11 +80,14 @@
 import { ref, defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'Table',
+  name: 'CommonTable',
   props: {
     groupedPosts: {
       type: Array,
       required: true,
+    },
+    errorMessage: {
+      type: String
     },
   },
   setup() {

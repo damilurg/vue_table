@@ -1,13 +1,14 @@
 <template>
   <main>
-    <Table
+    <CommonTable
     :groupedPosts="groupedPosts"
+    :errorMessage="errorMessage"
     />
   </main>
 </template>
 
 <script setup>
-import Table from '@/components/Table.vue'
+import CommonTable from '@/components/Table.vue'
 import { GET_USERS, GET_POSTS, GET_COMMENTS } from '@/config'
 import { onMounted, ref } from 'vue'
 import { useHttp } from '@/core/http-request'
@@ -16,11 +17,9 @@ const { httpGet } = useHttp()
 const usersResponse = ref()
 const postsResponse = ref()
 const commentsResponse = ref()
-
-const errorMessage = ref('')
-
 const groupedPosts = ref([])
 
+const errorMessage = ref('')
 
 async function getResponse() {
   try {
@@ -60,7 +59,7 @@ const transformResponse = () => {
   return Object.values(postsByAuthor)
 }
 
-onMounted(() => {
-  void getResponse()
+onMounted(async () => {
+  await getResponse()
 })
 </script>
